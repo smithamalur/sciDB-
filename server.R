@@ -25,4 +25,59 @@ shinyServer(function(input, output) {
     
   })
   
+  output$table <- renderTable({
+    user_data()
+  })
+  
+  
+  login <- eventReactive(input$login, {
+    check_login(input$username, input$password)
+  }) 
+  
+  logout <- eventReactive(input$logout, {
+    input$label = ""
+  }) 
+  
+  check_login <- function(username, password) {
+    library("scidb")
+    scidbconnect()
+    user = scidb("user")
+    attemptedUsername = subset(x[], usernames == username)
+    successfull = attemptedUsername["passwords"] == password
+    if (successfull) {
+      input$label = username
+    }
+    else {
+      input$label = ""
+    }
+  }
+  
+  
+  user_data <- eventReactive(input$add, {
+    load_user_data(input$username, input$password)
+  })  
+  
+  load_user_data <- function(username, password) {
+    library("scidb")
+    scidbconnect()
+    usernames = username
+    passwords = password
+    array = " "
+    df = data.frame(usernames, passwords, array)
+    df = as.scidb(df)
+    x <- scidb("user")
+    usernameInUse = x[]["usernames"] == username
+    if (any(usernameInUse)){
+      
+    }
+    else {
+      data <- rbind(x[], df[])
+      keeps <- c("usernames", "passwords", "array")
+      newDF = data[keeps]
+      newDF
+      x <- as.scidb(newDF,name="user")
+    }
+    return(x[])
+  }
+  
 })

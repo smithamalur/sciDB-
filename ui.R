@@ -27,8 +27,19 @@ shinyUI(fluidPage(titlePanel("BC Liquor Store prices"),
                                    selected = "WINE"),
                       selectInput("countryInput", 
                                   "Country",
-                                  choices = c("CANADA", "FRANCE", "ITALY"))),
-                    mainPanel("the results will go here")
+                                  choices = c("CANADA", "FRANCE", "ITALY")),
+                      textInput("username", label = h3("Enter Username")),
+                      textInput("password", label = h3("Enter Password")),
+                      actionButton("add", "Create Account", class = "btn-primary"),
+                      actionButton("login", "Log in", class = "btn-primary"),
+                      actionButton("logout", "Log out", class = "btn-primary")
+                      ),
+                    mainPanel(
+                      tabsetPanel(
+                        tabPanel("Home", "graph will go here or something"),
+                        tabPanel("User Table", tableOutput("table"))
+                      )
+                    )
                   ))
     
         
