@@ -9,6 +9,24 @@ output$value <- renderTable({
       d=iqdf(arrayI,n = 1)
       array_data=scidb(arrayName)
       attrs=scidb_attributes(array_data)
+      #usernames=c("Purva","Manasi","Matthew")
+      #passwords=c("pwd1","pwd2","pwd3")
+      #arrays=c("stockmarket","weather","crime")
+      #userdata<-data.frame(usernames,passwords,arrays)
+      #res1 <- as.scidb(userdata,name = "users")
+      x=scidb("users")
+      fd=iqdf(x)
+      username=input$userlabel
+      st=fd$arrays[fd$usernames==username]
+      st=paste(st,arrayName,sep=';')
+      fd$arrays[fd$usernames==username]<-st
+      iquery("remove(users)")
+      usernames=fd$usernames
+      passwords=fd$passwords
+      arrays=fd$arrays
+      temp<-data.frame(usernames,passwords,arrays)
+      x<-as.scidb(temp,name="users")
+      
       updateCheckboxGroupInput(session, "check",choices = c(attrs))
       print(iqdf(arrayI,n = 100,prob = 1))
       
@@ -82,26 +100,7 @@ observeEvent(input$redimensionArray,
       iquery(s4)
       s5=paste("rename(temp,",arrayName,")")
       iquery(s5)
-      #usernames=c("Purva","Manasi","Matthew")
-      #passwords=c("pwd1","pwd2","pwd3")
-      #arrays=c("stockmarket","weather","crime")
-      #userdata<-data.frame(usernames,passwords,arrays)
-      #res1 <- as.scidb(userdata,name = "users")
-      x=scidb("users")
-      fd=iqdf(x)
-      username=input$userlabel
-      st=fd$arrays[fd$usernames==username]
-      st=paste(st,arrayName,sep=';')
-      fd$arrays[fd$usernames==username]<-st
-      iquery("remove(users)")
-      usernames=fd$usernames
-      passwords=fd$passwords
-      arrays=fd$arrays
-      temp<-data.frame(usernames,passwords,arrays)
-      x<-as.scidb(temp,name="users")
-      
-      
-    }
+          }
   }
 )
   

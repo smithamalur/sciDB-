@@ -51,6 +51,7 @@
       newDF = data[keeps]
       newDF
       x <- as.scidb(newDF,name="users")
+      updateTextInput(session,"userlabel",value = username)
     }
     return(x[])
   }
