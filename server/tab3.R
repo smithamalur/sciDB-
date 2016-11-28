@@ -27,7 +27,7 @@ datasetFunc <- reactive(
       s2<-paste(s1,collapse = "_")
       s=""
       s=paste(s,"store(cumulate(",input$dataset,",sum(",input$checkbox,")),",s2,")")
-      #iquery(s)
+      iquery(s)
     }
     switch(input$functions,
            "count" = count(scidb(input$dataset)),
