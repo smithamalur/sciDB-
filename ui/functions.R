@@ -15,7 +15,7 @@ fluidPage(
       verbatimTextOutput("value3"),
       numericInput("obs", "Number of observations to view:", 10),
       selectInput("functions", "Choose a function:", 
-                  choices = c("count","cumulative","subset"))
+                  choices = c("count","cumulative","aggregate_avg","aggregate_sum","aggregate_prod"))
       #,verbatimTextOutput("value4")
       
     ),
