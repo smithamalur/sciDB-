@@ -25,14 +25,38 @@ datasetFunc <- reactive(
     if(!is.null(input$checkbox)){
       s1<-c(input$checkbox,input$functions)
       s2<-paste(s1,collapse = "_")
-      s=""
-      s=paste(s,"store(cumulate(",input$dataset,",sum(",input$checkbox,")),",s2,")")
-      iquery(s)
+      if(input$functions=="cumulative"){
+        s_cum=""
+        s_cum=paste(s_cum,"store(cumulate(", input$dataset, ",sum(",input$checkbox,")),",s2,")")
+        iquery(s_cum)
+      }
+      else
+        if(input$functions=="aggregate_sum"){
+          s_aggs=""
+          s_aggs=paste(s_aggs,"store(aggregate(",input$dataset,",sum(",input$checkbox,")),",s2,")")
+          iquery(s_aggs)
+        }
+      else
+        if(input$functions=="aggregate_avg"){
+          s_agga=""
+          s_agga=paste(s_agga,"store(aggregate(",input$dataset,",avg(",input$checkbox,")),",s2,")")
+          iquery(s_agga)
+        }
+      else
+        if(input$functions=="aggregate_prod"){
+          s_aggp=""
+          s_aggp=paste(s_aggp,"store(aggregate(",input$dataset,",prod(",input$checkbox,")),",s2,")")
+          iquery(s_aggp)
+        }
+      #  s_bern=""
+      #s_bern=paste(s_bern,)
     }
-    switch(input$functions,
-           "count" = count(scidb(input$dataset)),
-           "cumulative" = head(scidb(s2),n=input$obs),
-           "subset" = print("subset")
+           switch(input$functions,
+                  "count" = count(scidb(input$dataset)),
+                  "cumulative" = head(scidb(s2)),
+                  "aggregate_avg" = head(scidb(s2)),
+                  "aggregate_prod" = head(scidb(s2)),
+                  "aggregate_sum" = head(scidb(s2))
     )
   }  
 )
