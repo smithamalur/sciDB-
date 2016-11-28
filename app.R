@@ -18,7 +18,10 @@ ui <- mainPanel(
     tabPanel(
       "Create Arrays",
       source(file.path("ui", "mainpage.R"))),
-    tabPanel("Add Functions")
+    tabPanel("Add Functions"),
+    tabPanel(
+      "View Graph",
+      source(file.path("ui", "graph.R")))
   )
   
   
@@ -32,7 +35,7 @@ server <- function(input, output, session) {
   source(file.path("server", "tab1.R"),local = TRUE,echo = TRUE)
   
    source(file.path("server", "tab.R"),local = TRUE,echo = TRUE)
-  #source(file.path("server", "tab2.R"),local = TRUE,echo = TRUE)
+  source(file.path("server", "tab2.R"),local = TRUE,echo = TRUE)
   
 }
 
