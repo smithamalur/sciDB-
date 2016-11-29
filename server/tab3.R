@@ -1,4 +1,4 @@
-# Define server logic required to summarize and view the 
+# Define server logic required to summarize and view the
 # selected dataset
 # Return the requested dataset
 observe(
@@ -21,7 +21,17 @@ datasetInput <- reactive({
 
 
 datasetFunc <- reactive(
-  { 
+  {
+    if(input$functions=="join"){
+     dims1=input$check_func
+      s_im=paste(" ",dims1)
+      s_imm=paste(s_im,collapse = ",")
+      s3<-c(input$check_func,input$functions)
+      s4<-paste(s3,collapse = "_")         ##store(join(left_array,right_array),result_array)
+      s_join=("")
+     s_join=paste(s_join,"store(join(",s_imm,"),",s4,")")
+     iquery(s_join)
+    }
     if(!is.null(input$checkbox)){
       s1<-c(input$checkbox,input$functions)
       s2<-paste(s1,collapse = "_")
@@ -48,19 +58,69 @@ datasetFunc <- reactive(
           s_aggp=paste(s_aggp,"store(aggregate(",input$dataset,",prod(",input$checkbox,")),",s2,")")
           iquery(s_aggp)
         }
-      #  s_bern=""
-      #s_bern=paste(s_bern,)
+      else
+        if(input$functions=="bernoulli"){
+          updateTextInput(session, "func_param",label="Enter probability")
+          s_bern=""
+          s_bern=paste(s_bern,"store(bernoulli(",input$dataset,",",input$func_param,"),",s2,")")
+          iquery(s_bern)
+        }
+     # else
+      #  if(input$functions=="selection2"){
+       #   s_sel=""
+        #  s_sel=paste(s_sel,input$checkbox,"is selected",input$checkbox)
+        #}
+      else 
+        if(input$functions=="filter"){
+          updateTextInput(session, "func_param",label="Enter filter constraints (<,>,=)")
+          s_fil=""
+          s_fil=paste(s_fil,"store(filter(",input$dataset,",",input$checkbox,input$func_param,"),",s2,")")
+          iquery(s_fil)
+        }
+      
     }
-           switch(input$functions,
-                  "count" = count(scidb(input$dataset)),
-                  "cumulative" = head(scidb(s2)),
-                  "aggregate_avg" = head(scidb(s2)),
-                  "aggregate_prod" = head(scidb(s2)),
-                  "aggregate_sum" = head(scidb(s2))
+    switch(input$functions,
+           "count" = count(scidb(input$dataset)),
+           "cumulative" = head(scidb(s2),n=input$obs),
+           "aggregate_avg" = head(scidb(s2),n=input$obs),
+           "aggregate_prod" = head(scidb(s2),n=input$obs),
+           "aggregate_sum" = head(scidb(s2),n=input$obs),
+           "bernoulli" = head(scidb(s2),n=inp,ut$obs),
+           #"selection2" = print(s_sel),
+           "filter" = head(scidb(s2),n=input$obs),
+           "join" = head(scidb(s4),n=input$obs)
     )
-  }  
+  } 
 )
 
+  
+
+observeEvent(input$Save, {
+  str<-c(input$checkbox,input$functions)
+  str1<-paste(str,collapse = "_")
+  check_Save(str1)
+}) 
+check_Save <- function(str1){
+  a=scidb("users")
+  fd=iqdf(a)
+  username=input$userlabel
+  st=fd$arrays[fd$usernames==username]
+  st=paste(st,str1,sep=';')
+  fd$arrays[fd$usernames==username]<-st
+ iquery("remove(users)")
+  usernames=fd$usernames
+  passwords=fd$passwords
+  arrays=fd$arrays
+  temp<-data.frame(usernames,passwords,arrays)
+  x<-as.scidb(temp,name="users")
+}
+
+#observeEvent(input$functions=="join",{
+  #arrayName=input$dataset
+   #array_data=scidb(arrayName)
+  #attrs=scidb_attributes(array_data)
+  #updateCheckboxGroupInput(session, "checkbox1",choices = c(attrs))
+#})
 
 observe(
   {
@@ -68,8 +128,23 @@ observe(
     array_data=scidb(arrayName)
     attrs=scidb_attributes(array_data)
     updateCheckboxGroupInput(session, "checkbox",choices = c(attrs))
+    
   }
 )
+#observeEvent(input$functions=="join",{
+observe(   ###THIS WORKS!
+  { if(input$functions=="join")
+{    f=scidb("users")
+    fd2=iqdf(f)
+    username=input$userlabel
+    st=fd2$arrays[fd2$usernames==username]
+    arrs1<-(strsplit(st, ";"))
+    arrs1<-unlist(arrs1)
+    updateCheckboxGroupInput(session,"check_func",choices=c(arrs1))
+ } }
+)
+
+  
 
 output$value3 <- renderPrint(
   {
@@ -103,4 +178,7 @@ output$Functions <- renderPrint({
 output$view <- renderTable({
   
   head(scidb(input$dataset), n = input$obs)
+})
+output$nText <- renderText({
+  ntext()
 })
