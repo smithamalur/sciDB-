@@ -23,7 +23,7 @@ css <- "
 ui <- mainPanel(
   tags$style(type="text/css", css),
    fluidPage(theme = shinytheme("cerulean"),
-  titlePanel("Web Analytics"),
+  titlePanel("Scilyses"),
   fluidRow(
     column(3, align="left", offset = 0,
     h3("Welcome")),
