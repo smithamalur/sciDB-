@@ -3,16 +3,20 @@
 # Return the requested dataset
 observe(
   {
-    g=scidb("users")
-    fd1=iqdf(g)
-    username=input$userlabel
-    st=fd1$arrays[fd1$usernames==username]
-    arrs<-(strsplit(st, ";"))
-    arrs<-unlist(arrs)
-    updateSelectInput(session,"dataset",choices=c(arrs))
+    updatefunctionarray()
   }
 )
 
+updatefunctionarray <- function()
+{
+  g=scidb("users")
+  fd1=iqdf(g)
+  username=input$userlabel
+  st=fd1$arrays[fd1$usernames==username]
+  arrs<-(strsplit(st, ";"))
+  arrs<-unlist(arrs)
+  updateSelectInput(session,"dataset",choices=c(arrs))
+}
 datasetInput <- reactive({
   arrayName=input$dataset
   switch(input$dataset,
@@ -113,6 +117,9 @@ check_Save <- function(str1){
   arrays=fd$arrays
   temp<-data.frame(usernames,passwords,arrays)
   x<-as.scidb(temp,name="users")
+  updateVisualization()
+  load_user_arrays(username)
+  updatefunctionarray()  
 }
 
 #observeEvent(input$functions=="join",{

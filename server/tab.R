@@ -1,9 +1,11 @@
 lvl<-reactive(unlist(input$check))
-output$value <- renderTable({
-  inFile<-input$file
-  arrayName=input$arrayName
-  if (!is.null(inFile) && !is.null(arrayName) && arrayName!=''){
-    x=read.csv(inFile$datapath,header = TRUE, sep = ',')
+
+observeEvent(input$createArray,
+  {
+    inFile<-input$file
+    arrayName=input$arrayName
+    if (!is.null(inFile) && !is.null(arrayName) && arrayName!=''){
+      x=read.csv(inFile$datapath,header = TRUE, sep = ',')
       y<-as.scidb(x,name=arrayName)
       arrayI=scidb(arrayName)
       d=iqdf(arrayI,n = 1)
@@ -26,12 +28,19 @@ output$value <- renderTable({
       arrays=fd$arrays
       temp<-data.frame(usernames,passwords,arrays)
       x<-as.scidb(temp,name="users")
-      
       updateCheckboxGroupInput(session, "check",choices = c(attrs))
+      updateVisualization()
+      load_user_arrays(username)
+      updatefunctionarray()
+      output$value <- renderTable({
       print(iqdf(arrayI,n = 100,prob = 1))
-      
+      }
+      )
+    }
+    
   }
-  })
+)
+
 
 #observe({ 
 #  inFile<-input$file
@@ -41,7 +50,6 @@ output$value <- renderTable({
 #   attrs=scidb_attributes(array_data)
 #    updateCheckboxGroupInput(session, "check",choices = c(attrs))
 #    }
-
 #}
 #)
 
@@ -70,17 +78,14 @@ observeEvent(input$redimensionArray,
         rw <- df[i,]
         if(match(rw$attrs,dims,nomatch = 0)==0)
         {
-          
           s=paste(s,rw$attrs,":",rw$types1)
           if(count1>1)
           {
             s=paste(s,",")
-          }
+           }
           count1=count1-1
         }
-        
-        
-        }
+      }
       
       s1=""
       count2=0
@@ -100,8 +105,6 @@ observeEvent(input$redimensionArray,
       iquery(s4)
       s5=paste("rename(temp,",arrayName,")")
       iquery(s5)
-          }
+      }
   }
 )
-  
-  
