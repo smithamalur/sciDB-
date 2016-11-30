@@ -36,6 +36,7 @@ datasetFunc <- reactive(
      s_join=paste(s_join,"store(join(",s_imm,"),",s4,")")
      iquery(s_join)
     }
+    
     if(!is.null(input$checkbox)){
       s1<-c(input$checkbox,input$functions)
       s2<-paste(s1,collapse = "_")
@@ -68,7 +69,6 @@ datasetFunc <- reactive(
           s_bern=""
           s_bern=paste(s_bern,"store(bernoulli(",input$dataset,",",input$func_param,"),",s2,")")
           iquery(s_bern)
-        }
         }
       else 
         if(input$functions=="filter"){
@@ -191,6 +191,6 @@ output$view <- renderTable({
   
   head(scidb(input$dataset), n = input$obs)
 })
-output$nText <- renderText({
-  ntext()
-})
+#output$nText <- renderText({
+ # ntext()
+#})
