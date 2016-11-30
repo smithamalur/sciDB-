@@ -14,7 +14,7 @@ fluidPage(
  column(4,offset=1,
         selectInput("functions", "Choose a function:",
                     choices = c("count","cumulative","aggregate_avg","aggregate_sum","aggregate_prod",
-                                "aggregate_sum","bernoulli","filter","join"))),
+                                "aggregate_sum","bernoulli","filter","join","apply"))),
  column(3,offset=1,
         checkboxGroupInput('check_func', 'Functions',
                            choices = c('Valid for join function'))
