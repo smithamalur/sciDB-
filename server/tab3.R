@@ -69,11 +69,7 @@ datasetFunc <- reactive(
           s_bern=paste(s_bern,"store(bernoulli(",input$dataset,",",input$func_param,"),",s2,")")
           iquery(s_bern)
         }
-     # else
-      #  if(input$functions=="selection2"){
-       #   s_sel=""
-        #  s_sel=paste(s_sel,input$checkbox,"is selected",input$checkbox)
-        #}
+        }
       else 
         if(input$functions=="filter"){
           updateTextInput(session, "func_param",label="Enter filter constraints (<,>,=)")
@@ -81,7 +77,16 @@ datasetFunc <- reactive(
           s_fil=paste(s_fil,"store(filter(",input$dataset,",",input$checkbox,input$func_param,"),",s2,")")
           iquery(s_fil)
         }
-      
+      else
+        if(input$functions=="apply"){
+          updateTextInput(session, "func_param",label="Enter the expression")
+          s<-c("new",input$checkbox)
+          s_n1<-paste(s,collapse = "_")
+          s_n<-paste("",input$func_param,input$checkbox)
+          s_app=""
+          s_app=paste(s_app,"store(apply(",input$dataset,",",s_n1,",",s_n,"),",s2,")")
+          iquery(s_app)
+        }
     }
     switch(input$functions,
            "count" = count(scidb(input$dataset)),
@@ -90,9 +95,9 @@ datasetFunc <- reactive(
            "aggregate_prod" = head(scidb(s2),n=input$obs),
            "aggregate_sum" = head(scidb(s2),n=input$obs),
            "bernoulli" = head(scidb(s2),n=inp,ut$obs),
-           #"selection2" = print(s_sel),
            "filter" = head(scidb(s2),n=input$obs),
-           "join" = head(scidb(s4),n=input$obs)
+           "join" = head(scidb(s4),n=input$obs),
+           "apply" = head(scidb(s2),n=input$obs)
     )
   } 
 )
